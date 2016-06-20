@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.seckill.dao;
 
 import java.util.Date;
@@ -10,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.seckill.entity.Seckill;
 
 /**
+ * 秒杀业务Dao接口
  * @author Yuwl on 2016年6月12日
  */
 public interface SeckillDao {

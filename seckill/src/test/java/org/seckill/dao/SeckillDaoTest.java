@@ -2,10 +2,7 @@ package org.seckill.dao;
 
 import java.util.Date;
 import java.util.List;
-
 import javax.annotation.Resource;
-
-import org.apache.ibatis.annotations.Param;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seckill.entity.Seckill;
@@ -15,7 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 /**
  * @author Yuwl on 2016年6月12日
  */
-//配置Spring和Junit配合，Junit启动时加载Spring容器
+//配置Spring和Junit整合，Junit启动时加载Spring容器
 //spring-test,junit
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"classpath:spring/spring-dao.xml"})

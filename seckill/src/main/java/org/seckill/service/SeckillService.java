@@ -9,6 +9,7 @@ import org.seckill.exception.SeckillCloseException;
 import org.seckill.exception.SeckillException;
 
 /**
+ * 秒杀业务-Service接口
  * 站在使用者的角度设计接口
  * 三方面：方法定义粒度、参数、返回类型
  * @author Yuwl on 2016年6月15日

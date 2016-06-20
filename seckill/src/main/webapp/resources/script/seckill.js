@@ -48,13 +48,13 @@ var seckill = {
 				if(exposer['exposed']){//开始秒杀
 					var md5 = exposer['md5'];
 					var killUrl = seckill.URL.execute(seckillId, md5);
-					$("#killBtn").one("click",function(){
+					$("#killBtn").one("click",function(){//one只执行一次，后续失效
 						//执行秒杀请求
 						$(this).addClass("disabled");
 						$.post(killUrl,{},function(result){
 							if(result && result['success']){
 								var killResult = result['data'];
-								var state = killResult['state'];
+								//var state = killResult['state'];
 								var stateInfo = killResult['stateInfo'];
 								node.html('<span class="label label-success">'+stateInfo+'<span>');
 							}else{

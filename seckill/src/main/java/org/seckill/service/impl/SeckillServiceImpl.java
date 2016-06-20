@@ -119,7 +119,7 @@ public class SeckillServiceImpl implements SeckillService {
 		}catch(RepeadException e2){
 			throw e2;
 		}catch (Exception e) {
-			logger.equals(e.getMessage());
+			logger.error(e.getMessage());
 			//将所有编译期异常转化为运行期异常，只有抛出运行期异常，Spring事务才会回滚
 			//默认spring事务只在发生未被捕获的runtimeexcetpion时才回滚
 			throw new SeckillException("SeckillException inner error: "+e.getMessage());

@@ -1,7 +1,10 @@
 package org.seckill.entity;
 
 import java.util.Date;
-
+/**
+ * 秒杀实体
+ * @author Yuwl on 2016年6月20日
+ */
 public class Seckill {
 
 	private long seckillId;

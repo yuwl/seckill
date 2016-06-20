@@ -1,6 +1,7 @@
 package org.seckill.enums;
 
 /**
+ * 枚举实现数据字典常量
  * @author Yuwl on 2016年6月15日
  */
 public enum SeckillStateEnum {

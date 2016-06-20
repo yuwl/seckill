@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
+ * 秒杀业务-控制器
  * @author Yuwl on 2016年6月16日
  */
 @Controller
