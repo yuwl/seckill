@@ -3,6 +3,7 @@ package org.seckill.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.seckill.dao.RedisDao;
 import org.seckill.dao.SeckillDao;
 import org.seckill.dao.SuccessKilledDao;
 import org.seckill.dto.Exposer;
@@ -36,6 +37,9 @@ public class SeckillServiceImpl implements SeckillService {
 	private SeckillDao seckillDao;
 	
 	@Autowired
+	private RedisDao redisDao;
+	
+	@Autowired
 	private SuccessKilledDao successKilledDao;
 
 	/* (non-Javadoc)
@@ -59,10 +63,20 @@ public class SeckillServiceImpl implements SeckillService {
 	 */
 	@Override
 	public Exposer exportSeckillUrl(long seckillId) {
-		Seckill seckill = seckillDao.queryById(seckillId);
+		//优化点：缓存优化，超时基础上维护一致性
+		//1.redis获取
+		Seckill seckill = redisDao.getSeckill(seckillId);
 		if(seckill == null){
-			return new Exposer(false, seckillId);
+			//2.从数据库取
+			seckill = seckillDao.queryById(seckillId);
+			if(seckill == null){
+				return new Exposer(false, seckillId);
+			}else{
+				//3.放入redis
+				redisDao.putSeckill(seckill);
+			}
 		}
+		
 		Date start = seckill.getStartTime();
 		Date end = seckill.getEndTime();
 		Date now = new Date();
@@ -98,16 +112,21 @@ public class SeckillServiceImpl implements SeckillService {
 		}
 		try {
 			//执行秒杀逻辑：减库存+保存秒杀记录
-			int updateCount = seckillDao.reduceNumber(seckillId, new Date());
-			if(updateCount <= 0){
-				//没有更新到记录
-				throw new SeckillCloseException("seckill is closed");
+			//优化mysql行级锁的网络延迟及GC等待时间
+			//调整秒杀逻辑：保存秒杀记录+减库存
+			//先执行保存秒杀记录，因为这一步不涉及行级锁的等待，可以节省时间
+			//降低Mysql rowLock的持有时间，因为只有减库存(update)才会触发行级锁(同一个商品在秒杀时大量购买，同时update)		
+			//记录购买记录
+			
+			int insertCount = successKilledDao.insertSuccessKill(seckillId, userPhone);
+			if(insertCount <= 0){
+				//重复秒杀
+				throw new RepeadException("seckill repeat");
 			}else{
-				//记录购买记录
-				int insertCount = successKilledDao.insertSuccessKill(seckillId, userPhone);
-				if(insertCount <= 0){
-					//重复秒杀
-					throw new RepeadException("seckill repeat");
+				int updateCount = seckillDao.reduceNumber(seckillId, new Date());
+				if(updateCount <= 0){
+					//没有更新到记录
+					throw new SeckillCloseException("seckill is closed");
 				}else{
 					//秒杀成功
 					SuccessKilled successKilled = successKilledDao.queryByIdWithSeckill(seckillId, userPhone);
