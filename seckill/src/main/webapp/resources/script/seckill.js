@@ -4,14 +4,17 @@
  * seckill.detail.init()
  */
 var seckill = {
+	path : '',
 	//封装秒杀相关的ajax的url
 	URL : {
-		now : "/seckill/seckill/time/now",
+		now : function(){
+			return seckill.path + "/seckill/time/now";
+		}, 
 		exposer : function(seckillId){
-			return "/seckill/seckill/" + seckillId + "/exposer";
+			return seckill.path + "/seckill/" + seckillId + "/exposer";
 		},
 		execute : function(seckillId,md5){
-			return '/seckill/seckill/' + seckillId + '/' + md5 + '/execute';
+			return seckill.path + '/seckill/' + seckillId + '/' + md5 + '/execute';
 		}
 	},
 	validatePhone : function(phone){
@@ -79,6 +82,7 @@ var seckill = {
 	detail : {
 		//详情页初始化
 		init : function(params){
+			seckill.path = params['path'];
 			//手机验证和登录，倒计时交互
 			//在cookie中查找手机号
 			var killPhone = $.cookie("killPhone");
@@ -106,7 +110,7 @@ var seckill = {
 			var seckillId = params['seckillId'];
 			var startTime = params['startTime'];
 			var endTime = params['endTime'];
-			$.get(seckill.URL.now,{},function(result){
+			$.get(seckill.URL.now(),{},function(result){
 				if(result && result['success']){
 					var nowTime = result['data'];
 					seckill.countDown(seckillId, nowTime, startTime, endTime);

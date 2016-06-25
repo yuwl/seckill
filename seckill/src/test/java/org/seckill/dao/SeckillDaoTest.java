@@ -50,5 +50,5 @@ public class SeckillDaoTest {
 		int count = seckillDao.reduceNumber(1000, new Date());
 		System.out.println("count: "+count);
 	}
-
+	
 }

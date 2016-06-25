@@ -61,6 +61,7 @@
 	<script type="text/javascript">
 		$(function(){
 			seckill.detail.init({
+				path : '<%=request.getContextPath() %>',
 				seckillId : '${seckill.seckillId}',
 				startTime : '${seckill.startTime.time}',
 				endTime : '${seckill.endTime.time}'

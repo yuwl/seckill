@@ -1,8 +1,11 @@
 package org.seckill.service.impl;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.collections.MapUtils;
 import org.seckill.dao.RedisDao;
 import org.seckill.dao.SeckillDao;
 import org.seckill.dao.SuccessKilledDao;
@@ -142,6 +145,36 @@ public class SeckillServiceImpl implements SeckillService {
 			//将所有编译期异常转化为运行期异常，只有抛出运行期异常，Spring事务才会回滚
 			//默认spring事务只在发生未被捕获的runtimeexcetpion时才回滚
 			throw new SeckillException("SeckillException inner error: "+e.getMessage());
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.seckill.service.SeckillService#executeSeckillProcedure(long, long, java.lang.String)
+	 */
+	@Override
+	public SeckillExecution executeSeckillProcedure(long seckillId,
+			long userPhone, String md5) {
+		if(md5 == null || !md5.equals(getMd5(seckillId))){
+			throw new SeckillException("seckill data rewrite");
+		}
+		Map<String, Object> paramMap = new HashMap<String,Object>();
+		paramMap.put("seckillId", seckillId);
+		paramMap.put("phone", userPhone);
+		paramMap.put("killTime", new Date());
+		paramMap.put("result", null);
+		try {
+			seckillDao.killByProcedure(paramMap);
+			int result = MapUtils.getInteger(paramMap, "result", -2);
+			if(result == 1){
+				//秒杀成功
+				SuccessKilled successKilled = successKilledDao.queryByIdWithSeckill(seckillId, userPhone);
+				return new SeckillExecution(seckillId, SeckillStateEnum.SUCCESS, successKilled);
+			}else{
+				return new SeckillExecution(seckillId, SeckillStateEnum.stateOf(result));
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return new SeckillExecution(seckillId, SeckillStateEnum.INSERT_ERROR);
 		}
 	}
 

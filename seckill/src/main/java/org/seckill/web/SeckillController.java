@@ -85,7 +85,10 @@ public class SeckillController {
 			result = new SeckillResult<>(false, "手机号未注册");
 		}
 		try {
-			SeckillExecution seckillExecution = seckillService.executeSeckill(seckillId, phone, md5);
+			//使用Spring事务
+//			SeckillExecution seckillExecution = seckillService.executeSeckill(seckillId, phone, md5);
+			//使用存储过程
+			SeckillExecution seckillExecution = seckillService.executeSeckillProcedure(seckillId, phone, md5);
 			result = new SeckillResult<SeckillExecution>(true, seckillExecution);
 		} catch(RepeadException e){
 			logger.error(e.getMessage());
