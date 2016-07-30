@@ -12,19 +12,36 @@
     <context:property-placeholder location="classpath:jdbc.properties"/>
     
     <!-- 2.c3p0连接池 -->
-    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-    	<property name="driverClass" value="${driver}"/>
-    	<property name="jdbcUrl" value="${url}"/>
+    <!-- <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+    	<property name="driverClass" value="${jdbc.driver}"/>
+    	<property name="jdbcUrl" value="${jdbc.url}"/>
     	<property name="user" value="${jdbc.username}"/>
-    	<property name="password" value="${password}"/>
-    	<!-- 最大连接池 -->
+    	<property name="password" value="${jdbc.password}"/>
+    	最大连接池
     	<property name="maxPoolSize" value="30"/>
-    	<!-- 最小连接池 -->
+    	最小连接池
     	<property name="minPoolSize" value="10"/>
     	<property name="autoCommitOnClose" value="false"/>
     	<property name="checkoutTimeout" value="1000"/>
-    	<!-- 获取连接失败重试的次数 -->
+    	获取连接失败重试的次数
     	<property name="acquireRetryAttempts" value="2"/>
+    </bean> -->
+    
+    <!-- 2.druid连接池 -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" 
+    	init-method="init" destroy-method="close">
+    	<property name="driverClassName" value="${jdbc.driver}" />  
+	    <property name="url" value="${jdbc.url}" />  
+	    <property name="username" value="${jdbc.username}" />  
+	    <property name="password" value="${jdbc.password}" />  
+	      
+	     <!-- 配置初始化大小、最小、最大 -->    
+	    <property name="initialSize" value="1" />    
+	    <property name="minIdle" value="1" />     
+	    <property name="maxActive" value="20" />    
+	      
+	    <!-- 配置监控统计拦截的filters，去掉后监控界面sql无法统计 -->  
+	    <property name="filters" value="stat" />
     </bean>
     
     <!-- 3.配置SqlSessionFactory -->
